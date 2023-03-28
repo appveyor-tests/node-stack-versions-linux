@@ -1,0 +1,76 @@
+init:
+- appveyor version
+- ps: Update-AppveyorBuild -Message "Image '$env:APPVEYOR_BUILD_WORKER_IMAGE'@'$env:APPVEYOR_BUILD_WORKER_CLOUD' cloud. $env:APPVEYOR_REPO_COMMIT_MESSAGE"
+- sh: echo $APPVEYOR_BUILD_WORKER_CLOUD
+- sh: echo $APPVEYOR_BUILD_WORKER_IMAGE
+- sh: |
+    # Only use colors if connected to a terminal
+    if [ -t 1 ]; then
+      RED=$(printf '\033[31m')
+      GREEN=$(printf '\033[32m')
+      YELLOW=$(printf '\033[33m')
+      BLUE=$(printf '\033[34m')
+      BOLD=$(printf '\033[1m')
+      RESET=$(printf '\033[m')
+      NC=$(printf '\033[m')
+    else
+      RED=""
+      GREEN=""
+      YELLOW=""
+      BLUE=""
+      BOLD=""
+      RESET=""
+      NC=""
+    fi
+
+
+# environment:
+#   expected_default_node: v16.
+#   expected_lts_node: v18.
+#   expected_stable_node: v19.
+
+
+test_script:
+    - sh: nvm --version
+    - sh: nvm list
+    
+    - sh: |
+        echo Default
+        nv=$(node --version)
+        echo $nv
+        if [[ $nv =~ ^$NODE_DEFAULT ]]; then
+            echo "${GREEN}Default Node.js version is Correct${NC}"
+        else
+            echo "${RED}Default Node.js version should be '${NODE_DEFAULT}.x'${NC}"
+            exit 1
+        fi
+
+    - sh: |
+        echo LTS
+        nvm use lts/*
+        nv=$(node --version)
+        echo $nv
+        if [[ $nv =~ ^$NODE_EXPECTED ]]; then
+            echo "${GREEN}LTS Node.js version is Correct${NC}"
+        else
+            echo "${RED}LTS Node.js version should be '${NODE_EXPECTED}.x'${NC}"
+            exit 1
+        fi
+
+    - sh: |
+        echo Stable
+        nvm use stable
+        nv=$(node --version)
+        echo $nv
+        if [[ $nv =~ ^$NODE_STABLE ]]; then
+            echo "${GREEN}Stable Node.js version is Correct${NC}"
+        else
+            echo "${RED}Stable Node.js version should be '${NODE_STABLE}.x'${NC}"
+            exit 1
+        fi
+        
+
+# artifacts:
+#   - path: '**\*.txt'
+
+build: off
