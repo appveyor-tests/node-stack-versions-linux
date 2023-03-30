@@ -50,10 +50,10 @@ test_script:
         nvm use lts/*
         nv=$(node --version)
         echo $nv
-        if [[ $nv =~ ^$NODE_EXPECTED ]]; then
+        if [[ $nv =~ ^$NODE_LTS ]]; then
             echo "${GREEN}LTS Node.js version is Correct${NC}"
         else
-            echo "${RED}LTS Node.js version should be '${NODE_EXPECTED}.x'${NC}"
+            echo "${RED}LTS Node.js version should be '${NODE_LTS}.x'${NC}"
             exit 1
         fi
 
